@@ -4,7 +4,7 @@ from discord import Interaction, Embed, Button
 from models.profile import Profile
 from schemas.stats import StatsORM
 from services.tracker_gg import TrackerGGService
-from databases.session import get_session
+from controllers.profiles import ProfileController
 
 tracker_gg_service = TrackerGGService()
 
@@ -29,12 +29,10 @@ class ConfirmationView(discord.ui.View):
                 wins=self.stats.wins,
                 losses=self.stats.losses,
                 kills=self.stats.kills,
+                assists=self.stats.assists,
                 score=self.stats.score,
             )
-            session = await get_session()
-            session.add(profile)
-            await session.commit()
-            await session.close()
+            await ProfileController().add_profile(profile)
         except Exception as e:
             return await self.interaction.edit_original_response(
                 embed=Embed(
@@ -70,6 +68,26 @@ async def AddProfileCommand(
         interaction: Interaction,
         nick: str,
 ):
+    has_nick = await ProfileController().query(guild_id=interaction.guild_id, nick_name=nick)
+    if has_nick:
+        return await interaction.edit_original_response(
+            embed=Embed(
+                title='Profile already exists',
+                description=f'Profile {nick} already exists\n',
+                color=0xff0000,
+            )
+        )
+
+    user_has_nick = await ProfileController().query(user_id=interaction.user.id)
+    if user_has_nick:
+        return await interaction.edit_original_response(
+            embed=Embed(
+                title='Profile already exists',
+                description=f'You already have a profile\n',
+                color=0xff0000,
+            )
+        )
+
     profile = tracker_gg_service.get_profile_stats(nick, 'ubi')
     if not profile:
         return await interaction.edit_original_response(
@@ -93,6 +111,7 @@ async def AddProfileCommand(
             stats.losses += segment.stats.matchesLost.value
             stats.kills += segment.stats.kills.value
             stats.score += segment.stats.score.value
+            stats.assists += segment.stats.assists.value
 
     embed = Embed(
         title=f"{nick} (lvl {stats.level})",
@@ -100,7 +119,7 @@ async def AddProfileCommand(
                     f'Wins: **{stats.wins}**\n'
                     f'Losses: **{stats.losses}**\n'
                     f'Kills: **{stats.kills}**\n'
-                    f'Score: **{stats.score}**\n',
+                    f'Assists: **{stats.assists}**\n',
         color=0x2986CC,
         url=f'https://tracker.gg/xdefiant/profile/ubi/{nick}/overview'
     )

@@ -22,7 +22,7 @@ def upgrade() -> None:
     op.create_table(
         "profiles",
         sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("nick_name", sa.String, unique=True, nullable=False),
+        sa.Column("nick_name", sa.String, nullable=False),
         sa.Column("guild_id", sa.Integer, nullable=False),
         sa.Column("user_id", sa.Integer, nullable=False),
         sa.Column("level", sa.Integer, default=0),
@@ -30,6 +30,7 @@ def upgrade() -> None:
         sa.Column("wins", sa.Integer, default=0),
         sa.Column("losses", sa.Integer, default=0),
         sa.Column("kills", sa.Integer, default=0),
+        sa.Column("assists", sa.Integer, default=0),
         sa.Column("score", sa.Float, default=0.0),
         sa.Column("description", sa.String, default=None, nullable=True),
         sa.Column("avatar", sa.String, default=None, nullable=True),

@@ -15,6 +15,7 @@ class Profile(Base):
     wins = Column(Integer, default=0)
     losses = Column(Integer, default=0)
     kills = Column(Integer, default=0)
+    assists = Column(Integer, default=0)
     score = Column(Float, default=0.0)
     description = Column(String, default=None, nullable=True)
     avatar = Column(String, default=None, nullable=True)

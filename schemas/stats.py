@@ -9,6 +9,7 @@ class StatsORM(BaseModel):
     wins: int = 0
     losses: int = 0
     kills: int = 0
+    assists: int = 0
     score: float = 0.0
 
 

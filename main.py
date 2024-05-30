@@ -4,7 +4,7 @@ import discord
 from discord import Interaction, app_commands
 from discord.ext import commands
 
-from commands.add_profile import AddProfileCommand
+from commands import AddProfileCommand, MeCommand, FetchProfile
 from config import DISCORD_TOKEN, MANAGER_ROLE
 
 
@@ -50,13 +50,8 @@ async def add_profile(interaction: Interaction, nick: str):
 )
 @app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
 async def me(interaction: Interaction):
-    nick = interaction.guild.get_member(interaction.user.id).display_name
-    embed = discord.Embed(
-        title='Your profile',
-        description=f'Your nickname is {nick}',
-        color=0x00ff00,
-    )
-    await interaction.response.send_message(embed=embed)  # noqa
+    await interaction.response.defer(ephemeral=True)  # noqa
+    await MeCommand(interaction)
 
 
 @client.tree.command(
@@ -79,13 +74,8 @@ async def get_ranked(interaction: Interaction):
 )
 @app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
 async def get_profile(interaction: Interaction, user: discord.Member):
-    nick = user.display_name
-    embed = discord.Embed(
-        title='Profile',
-        description=f'{user.mention}\'s nickname is {nick}',
-        color=0x00ff00,
-    )
-    await interaction.response.send_message(embed=embed)  # noqa
+    await interaction.response.defer(ephemeral=True)  # noqa
+    await FetchProfile(interaction, user)
 
 
 @client.tree.command(
@@ -95,7 +85,11 @@ async def get_profile(interaction: Interaction, user: discord.Member):
 async def help(interaction: Interaction):
     embed = discord.Embed(
         title='Help',
-        description='Commands:\n$ping\n$add_profile\n$me\n$ranked\n$profile\n$help',
+        description='**/ping**: Latency\n'
+                    '**/me**: Get your profile\n'
+                    '**/ranked**: Get top 10 ranked players\n'
+                    '**/profile**: Get a profile\n'
+                    '**/add_profile**: Add a profile\n',
         color=0x00ff00,
     )
     await interaction.response.send_message(embed=embed)  # noqa
