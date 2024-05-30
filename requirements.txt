@@ -4,3 +4,4 @@ SQLAlchemy~=2.0.30
 alembic~=1.13.1
 pydantic~=2.7.2
 requests~=2.32.3
+aiosqlite~=0.20.0

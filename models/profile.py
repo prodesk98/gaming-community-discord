@@ -6,7 +6,7 @@ from models.base import Base
 class Profile(Base):
     __tablename__ = 'profiles'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     nick_name = Column(String, unique=True, nullable=False)
     guild_id = Column(Integer, nullable=False)
     user_id = Column(Integer, nullable=False)

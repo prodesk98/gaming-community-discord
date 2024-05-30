@@ -3,6 +3,15 @@ from typing import List, Optional
 from datetime import datetime
 
 
+class StatsORM(BaseModel):
+    level: int = 0
+    matches: int = 0
+    wins: int = 0
+    losses: int = 0
+    kills: int = 0
+    score: float = 0.0
+
+
 class MatchAttributes(BaseModel):
     id: datetime
 
