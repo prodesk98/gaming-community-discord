@@ -1,0 +1,115 @@
+from typing import Any
+
+import discord
+from discord import Interaction, app_commands
+from discord.ext import commands
+
+from commands.add_profile import AddProfileCommand
+from config import DISCORD_TOKEN, MANAGER_ROLE
+
+
+class ClientBot(commands.Bot):
+    async def on_ready(self):
+        print(f'Logged on as {self.user}!')
+        await self.tree.sync()
+
+
+intents = discord.Intents.default()
+intents.message_content = False
+client = ClientBot(command_prefix='$', intents=intents)
+
+
+@client.tree.command(
+    name='ping',
+    description='Check if the bot is online',
+)
+@app_commands.checks.cooldown(1, 60, key=lambda i: (i.guild_id, i.user.id))
+async def ping(interaction: Interaction):
+    embed = discord.Embed(
+        title='Pong!',
+        description=f'Latency: {round(client.latency * 1000)}ms',
+        color=0x00ff00,
+    )
+    await interaction.response.send_message(embed=embed)  # noqa
+
+
+@client.tree.command(
+    name='add_profile',
+    description='Add a profile to the bot',
+)
+@app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
+@app_commands.checks.has_role(MANAGER_ROLE)
+async def add_profile(interaction: Interaction, nick: str):
+    await interaction.response.defer(ephemeral=True) # noqa
+    await AddProfileCommand(interaction, nick)
+
+
+@client.tree.command(
+    name='me',
+    description='Get your profile',
+)
+@app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
+async def me(interaction: Interaction):
+    nick = interaction.guild.get_member(interaction.user.id).display_name
+    embed = discord.Embed(
+        title='Your profile',
+        description=f'Your nickname is {nick}',
+        color=0x00ff00,
+    )
+    await interaction.response.send_message(embed=embed)  # noqa
+
+
+@client.tree.command(
+    name='ranked',
+    description='Get top 10 ranked players',
+)
+@app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
+async def get_ranked(interaction: Interaction):
+    embed = discord.Embed(
+        title='Top 10 ranked players',
+        description='1. Player 1\n2. Player 2\n3. Player 3\n4. Player 4\n5. Player 5\n6. Player 6\n7. Player 7\n8. Player 8\n9. Player 9\n10. Player 10',
+        color=0x00ff00,
+    )
+    await interaction.response.send_message(embed=embed)  # noqa
+
+
+@client.tree.command(
+    name='profile',
+    description='Get a profile',
+)
+@app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
+async def get_profile(interaction: Interaction, user: discord.Member):
+    nick = user.display_name
+    embed = discord.Embed(
+        title='Profile',
+        description=f'{user.mention}\'s nickname is {nick}',
+        color=0x00ff00,
+    )
+    await interaction.response.send_message(embed=embed)  # noqa
+
+
+@client.tree.command(
+    name='help',
+    description='Get help',
+)
+async def help(interaction: Interaction):
+    embed = discord.Embed(
+        title='Help',
+        description='Commands:\n$ping\n$add_profile\n$me\n$ranked\n$profile\n$help',
+        color=0x00ff00,
+    )
+    await interaction.response.send_message(embed=embed)  # noqa
+
+
+@client.tree.error
+async def error(interaction: Interaction, error: Any):
+    embed = discord.Embed(
+        title='Error',
+        description=error,
+        color=0xff0000,
+    )
+    await interaction.response.send_message(embed=embed)  # noqa
+
+
+if __name__ == '__main__':
+    client.run(DISCORD_TOKEN)

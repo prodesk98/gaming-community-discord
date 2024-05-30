@@ -1,0 +1,9 @@
+### Get profile API PRIVATE
+GET https://public-api.tracker.gg/v2/xdefiant/standard/matches/{{platform}}/{{platformUserIdentifier}}
+Content-Type: application/json
+TRN-Api-Key: {{api_key}}
+
+
+### Get profile API PUBLIC
+https://api.tracker.gg/api/v2/xdefiant/standard/matches/{{platform}}/{{platformUserIdentifier}}
+Content-Type: application/json
