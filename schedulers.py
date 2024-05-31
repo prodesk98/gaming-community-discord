@@ -60,6 +60,7 @@ def stats_job():
         if XPdelta > 0:
             ScoresController().add_score(profile.id, XPdelta)  # type: ignore
 
+        logger.info(f"Added {XPdelta} XP to {profile.nick_name}")
         logger.info(f"Updated {profile.nick_name} stats")
         logger.debug("Waiting 10 seconds")
 
