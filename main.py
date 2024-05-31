@@ -4,7 +4,10 @@ import discord
 from discord import Interaction, app_commands
 from discord.ext import commands
 
-from commands import AddProfileCommand, MeCommand, FetchProfileCommand, Top10RankCommand
+from commands import (
+    AddProfileCommand, MeCommand, FetchProfileCommand,
+    Top10RankCommand, RemoveNickCommand, RemoveProfileCommand
+)
 from config import DISCORD_TOKEN, MANAGER_ROLE
 
 
@@ -23,14 +26,14 @@ client = ClientBot(command_prefix='$', intents=intents)
     name='ping',
     description='Check if the bot is online',
 )
-@app_commands.checks.cooldown(1, 60, key=lambda i: (i.guild_id, i.user.id))
+@app_commands.checks.has_role(MANAGER_ROLE)
 async def ping(interaction: Interaction):
     embed = discord.Embed(
         title='Pong!',
         description=f'Latency: {round(client.latency * 1000)}ms',
         color=0x00ff00,
     )
-    await interaction.response.send_message(embed=embed)  # noqa
+    await interaction.response.send_message(embed=embed, ephemeral=True)  # noqa
 
 
 @client.tree.command(
@@ -38,10 +41,19 @@ async def ping(interaction: Interaction):
     description='Add a profile to the bot',
 )
 @app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
-@app_commands.checks.has_role(MANAGER_ROLE)
 async def add_profile(interaction: Interaction, nick: str):
     await interaction.response.defer(ephemeral=True) # noqa
     await AddProfileCommand(interaction, nick)
+
+
+@client.tree.command(
+    name='remove_nick',
+    description='Remove a nickname',
+)
+@app_commands.checks.has_role(MANAGER_ROLE)
+async def remove_nick(interaction: Interaction, user: discord.Member):
+    await interaction.response.defer(ephemeral=True) # noqa
+    await RemoveNickCommand(interaction, user)
 
 
 @client.tree.command(
@@ -65,6 +77,16 @@ async def get_ranked(interaction: Interaction):
 
 
 @client.tree.command(
+    name='remove_profile',
+    description='Remove a profile',
+)
+@app_commands.checks.has_role(MANAGER_ROLE)
+async def remove_profile(interaction: Interaction, user: discord.Member):
+    await interaction.response.defer(ephemeral=True) # noqa
+    await RemoveProfileCommand(interaction, user)
+
+
+@client.tree.command(
     name='profile',
     description='Get a profile',
 )
@@ -81,8 +103,7 @@ async def get_profile(interaction: Interaction, user: discord.Member):
 async def help(interaction: Interaction):
     embed = discord.Embed(
         title='Help',
-        description='**/ping**: Latency\n'
-                    '**/me**: Get your profile\n'
+        description='**/me**: Get your profile\n'
                     '**/ranked**: Get top 10 ranked players\n'
                     '**/profile**: Get a profile\n'
                     '**/add_profile**: Add a profile\n',

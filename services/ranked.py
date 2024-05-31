@@ -92,6 +92,16 @@ async def calc_likes(target_id: int) -> int:
 
 
 async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) -> None:
+    if profile.nick_name is None:
+        await interaction.edit_original_response(
+            embed=Embed(
+                title='Profile not found',
+                description='This profile does not have a nickname.\n',
+                color=0xff0000,
+            )
+        )
+        return
+
     exp = await calc_exp(profile.id)
     likes = await calc_likes(target_id=profile.id)
     ranked_level = calc_level(exp)

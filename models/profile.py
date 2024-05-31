@@ -7,7 +7,7 @@ class Profile(Base):
     __tablename__ = 'profiles'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    nick_name = Column(String, unique=True, nullable=False)
+    nick_name = Column(String, unique=True, nullable=True, default=None)
     guild_id = Column(Integer, nullable=False)
     user_id = Column(Integer, nullable=False)
     level = Column(Integer, default=0)

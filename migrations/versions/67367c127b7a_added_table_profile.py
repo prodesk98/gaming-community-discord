@@ -22,7 +22,7 @@ def upgrade() -> None:
     op.create_table(
         "profiles",
         sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("nick_name", sa.String, nullable=False),
+        sa.Column("nick_name", sa.String, nullable=True, default=None),
         sa.Column("guild_id", sa.Integer, nullable=False),
         sa.Column("user_id", sa.Integer, nullable=False),
         sa.Column("level", sa.Integer, default=0),

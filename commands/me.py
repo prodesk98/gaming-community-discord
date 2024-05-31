@@ -17,5 +17,15 @@ async def MeCommand(
             )
         )
 
+    if profile.nick_name is None:
+        return await interaction.edit_original_response(
+            embed=Embed(
+                title='Add a nickname',
+                description='Please add a nickname to your profile.\n'
+                            'Please use `/add_profile` to add a nickname.',
+                color=0xff0000,
+            )
+        )
+
     await fetch_ranked_by_profile(interaction, profile)
 

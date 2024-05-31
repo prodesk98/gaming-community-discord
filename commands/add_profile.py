@@ -32,7 +32,12 @@ class ConfirmationView(discord.ui.View):
                 assists=self.stats.assists,
                 score=self.stats.score,
             )
-            await ProfileController().add_profile(profile)
+            has_profile = await ProfileController().query(user_id=interaction.user.id)
+            if has_profile:
+                has_profile.nick_name = self.nick
+                await ProfileController().update_profile(has_profile)
+            else:
+                await ProfileController().add_profile(profile)
         except Exception as e:
             return await self.interaction.edit_original_response(
                 embed=Embed(
@@ -46,7 +51,8 @@ class ConfirmationView(discord.ui.View):
         await self.interaction.edit_original_response(
             embed=Embed(
                 title='Profile added',
-                description='Profile added successfully',
+                description='Profile added successfully\n'
+                            'You can now use the `/me` command to see your profile.',
                 color=0x00ff00,
             ),
             view=None
@@ -78,8 +84,8 @@ async def AddProfileCommand(
             )
         )
 
-    user_has_nick = await ProfileController().query(user_id=interaction.user.id)
-    if user_has_nick:
+    has_profile = await ProfileController().query(user_id=interaction.user.id)
+    if has_profile and has_profile.nick_name is not None:
         return await interaction.edit_original_response(
             embed=Embed(
                 title='Profile already exists',
