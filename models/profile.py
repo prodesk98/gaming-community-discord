@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, BigInteger, String, Float
 
 from models.base import Base
 
@@ -8,8 +8,8 @@ class Profile(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     nick_name = Column(String, unique=True, nullable=True, default=None)
-    guild_id = Column(Integer, nullable=False)
-    user_id = Column(Integer, nullable=False)
+    guild_id = Column(BigInteger, nullable=False)
+    user_id = Column(BigInteger, nullable=False)
     level = Column(Integer, default=0)
     matches = Column(Integer, default=0)
     wins = Column(Integer, default=0)
