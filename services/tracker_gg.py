@@ -28,7 +28,7 @@ class TrackerGGService:
     def _get_profile_stats(nickname: str, platform: str) -> None | Stats:
         url = f'{TRACKER_GG_API_ENDPOINT}/{GAME}/standard/matches/{platform}/{nickname}'
         response = requests.get(url, headers=HEADERS, proxies=PROXIES)
-        print(response.content)
+        print("Tracker gg status code:", response.status_code)
         if not response.ok:
             return
         data = response.json()
