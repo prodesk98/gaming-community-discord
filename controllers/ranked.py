@@ -1,7 +1,7 @@
 import asyncio
 
 from loguru import logger
-from sqlalchemy import func, desc, select, asc
+from sqlalchemy import func, desc, select, asc, text
 
 from controllers.base import CONTROLLER
 from models.profile import Profile
@@ -32,7 +32,7 @@ class RankedController(CONTROLLER):
                 .where(Profile.guild_id == guild_id)  # type: ignore
                 .where(Scores.profile_id == Profile.id)  # type: ignore
                 .where(Profile.nick_name.isnot(None))  # type: ignore
-                .where(Scores.created_at >= func.text("'8 days'::interval"))  # expires in 8 days
+                .where(Scores.created_at >= func.current_timestamp() - text("INTERVAL '8 days'"))  # expire in 8 days
                 .group_by(Profile.id, Profile.user_id)
                 .order_by(desc("total_score"), asc("id"))
                 .limit(limit)
