@@ -68,7 +68,7 @@ def stats_job():
 
 stats_job()
 scheduler = BlockingScheduler()
-scheduler.add_job(stats_job, 'interval', minutes=35)
+scheduler.add_job(stats_job, 'interval', minutes=30)
 
 if __name__ == '__main__':
     scheduler.start()
