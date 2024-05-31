@@ -1,6 +1,6 @@
 from discord import Interaction, Embed
 from controllers.ranked import RankedController
-from services.ranked import get_discord_icon, calc_level
+from services.ranked import get_discord_icon_by_level, calc_level
 
 
 async def Top10RankCommand(
@@ -15,7 +15,7 @@ async def Top10RankCommand(
     for n, rank in enumerate(ranking):
         profile_id, user_id, nick, total_score = rank
         ranked_level = calc_level(total_score)
-        body += f"{n + 1}. <@{user_id}> **{nick}** ({get_discord_icon(ranked_level)} {ranked_level} lvl / {total_score} xp)\n"
+        body += f"{n + 1}. <@{user_id}> **{nick}** ({get_discord_icon_by_level(ranked_level)} {ranked_level} lvl / {total_score} xp)\n"
 
     if not body:
         body = "No ranked players found."

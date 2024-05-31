@@ -1,6 +1,9 @@
-import discord.ui
-from discord import Embed, Interaction, File, Button
+from typing import Dict, List
 
+import discord.ui
+from discord import Embed, Interaction, File, Button, Member
+
+from config.environments import DATA_CONFIG
 from controllers.likes import LikesController
 from controllers.profiles import ProfileController
 from controllers.scores import ScoresController
@@ -36,51 +39,49 @@ class LikesButton(discord.ui.View):
 
 
 def calc_level(exp: int) -> int:
-    if exp < 100:
-        return 1
-    elif exp < 1000:
-        return 2
-    elif exp < 2000:
-        return 3
-    elif exp < 3000:
-        return 4
-    return 5
+    levels_peer_exp: List[int] = DATA_CONFIG['levels_peer_exp']
+    for level, exp_level in enumerate(levels_peer_exp, start=1):
+        if exp < exp_level:
+            return level
+    return len(levels_peer_exp) + 1
 
 
-def get_color(level: int) -> int:
-    if level == 1:
-        return 0xCE7E00
-    elif level == 2:
-        return 0x999999
-    elif level == 3:
-        return 0xF1C232
-    elif level == 4:
-        return 0xFFC000
-    return 0x5D3AB6
+def get_color_by_level(level: int) -> int:
+    colours_level = [
+        0xCE7E00,
+        0x999999,
+        0xF1C232,
+        0xFFC000,
+        0x5D3AB6,
+    ]
+    return colours_level[level - 1]
 
 
-def get_ranked_name(level: int) -> str:
-    if level == 1:
-        return "Bronze"
-    elif level == 2:
-        return "Silver"
-    elif level == 3:
-        return "Gold"
-    elif level == 4:
-        return "Platinum"
-    return "Diamond"
+def get_ranked_name_by_level(level: int) -> str:
+    names_level: List[str] = DATA_CONFIG['names_level']
+    return names_level[level - 1]
 
 
-def get_discord_icon(level: int) -> str:
-    if level == 1:
-        return "<:lvl_1:1245862237927772160>"
-    elif level == 2:
-        return "<:lvl_2:1245862239701958706>"
-    elif level == 3:
-        return "<:lvl_3:1245862242004500571>"
-    elif level == 4:
-        return "<:lvl_4:1245862244542320701>"
-    return "<:lvl_5:1245862686248669305>"
+def get_discord_icon_by_level(level: int) -> str:
+    discord_icons_level: List[str] = DATA_CONFIG['discord_icons_level']
+    return discord_icons_level[level - 1]
+
+
+def get_role_level(level: int) -> str | None:
+    roles_level: Dict[str, str] = DATA_CONFIG['roles_level']
+    return next((v for k, v in roles_level.items() if k == f"lvl_{level}"), None)
+
+
+def get_roles_level() -> List[str]:
+    roles_level: Dict[str, str] = DATA_CONFIG['roles_level']
+    return [name for name in roles_level.values()]
+
+
+async def remove_role_level(interaction: Interaction, roles: List[str], author: Member) -> None:
+    for role in get_roles_level():
+        if role in roles:
+            role = discord.utils.get(interaction.guild.roles, name=role)
+            await author.remove_roles(role)
 
 
 async def calc_exp(profile_id: int) -> int:
@@ -108,9 +109,9 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
 
     embed = Embed(
         title=f"{profile.nick_name} ({profile.level} lvl)",
-        description=f'{exp} xp ({get_discord_icon(ranked_level)} {ranked_level} lvl - {get_ranked_name(ranked_level)})\n'
+        description=f'{exp} xp ({get_discord_icon_by_level(ranked_level)} {ranked_level} lvl - {get_ranked_name_by_level(ranked_level)})\n'
                     f'{likes} likes\n\n',
-        color=get_color(ranked_level),
+        color=get_color_by_level(ranked_level),
     )
     embed.add_field(
         name='Kills',
@@ -144,6 +145,16 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
     )
 
     author = await interaction.guild.fetch_member(profile.user_id)
+
+    if interaction.user.id == profile.user_id:
+        author_roles = author.roles
+        roles = [role.name for role in author_roles]
+        role_level = get_role_level(ranked_level)
+        if role_level not in roles:
+            await remove_role_level(interaction, roles, author)
+
+            role = discord.utils.get(interaction.guild.roles, name=role_level)
+            await author.add_roles(role)
 
     ranked_icon = File(f"assets/scores/lvl_{ranked_level}.png", filename=f"ranked.png")
     embed.set_thumbnail(url=f"attachment://ranked.png")

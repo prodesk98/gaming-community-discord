@@ -5,5 +5,25 @@
     "lvl_3": "Ouro",
     "lvl_4": "Platina",
     "lvl_5": "Diamante"
-  }
+  },
+  "levels_peer_exp": [
+    100,
+    500,
+    1000,
+    3000
+  ],
+  "names_level": [
+    "Bronze",
+    "Silver",
+    "Gold",
+    "Platinum",
+    "Diamond"
+  ],
+  "discord_icons_level": [
+    "<:lvl_1:1245862237927772160>",
+    "<:lvl_2:1245862239701958706>",
+    "<:lvl_3:1245862242004500571>",
+    "<:lvl_4:1245862244542320701>",
+    "<:lvl_5:1245862686248669305>"
+  ]
 }
