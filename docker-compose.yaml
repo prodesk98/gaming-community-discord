@@ -1,4 +1,20 @@
 services:
+  database:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=gc-xdefiant
+      - POSTGRES_PASSWORD=3a56ba95118f2dda2de6da3d2da18e1a
+      - POSTGRES_DB=gc-xdefiant
+    volumes:
+      - postgres-gc-xdefiant:/var/lib/postgresql/data
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U gc-xdefiant"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
   discord-bot:
     build: .
     container_name: discord-bot
@@ -9,7 +25,8 @@ services:
     volumes:
       - data-xdefiant:/app
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   scheduler:
     build: .
@@ -21,19 +38,8 @@ services:
     volumes:
       - data-xdefiant:/app
     depends_on:
-      - database
-
-  database:
-    image: postgres:latest
-    container_name: postgres
-    restart: always
-    environment:
-      - POSTGRES_USER=gc-xdefiant
-      - POSTGRES_PASSWORD=3a56ba95118f2dda2de6da3d2da18e1a
-      - POSTGRES_DB=gc-xdefiant
-    volumes:
-      - postgres-gc-xdefiant:/var/lib/postgresql/data
-
+      database:
+        condition: service_healthy
 
 volumes:
     postgres-gc-xdefiant:
