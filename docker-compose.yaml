@@ -1,0 +1,24 @@
+services:
+  discord-bot:
+    build: .
+    container_name: discord-bot
+    restart: always
+    environment:
+      - APP_TYPE=bot
+      - DATABASE_URL=sqlite:///gc-xdefiant.db
+    volumes:
+      - discord-gc-xdefiant:/app
+
+  scheduler:
+    build: .
+    container_name: scheduler
+    restart: always
+    environment:
+      - APP_TYPE=scheduler
+      - DATABASE_URL=sqlite:///gc-xdefiant.db
+    volumes:
+      - discord-gc-xdefiant:/app
+
+
+volumes:
+    discord-gc-xdefiant:
