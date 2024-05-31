@@ -24,5 +24,12 @@ class ScoresController(CONTROLLER):
             return 0
         return result
 
+    def add_score(self, profile_id: int, value: int):
+        self.get_connection()
+        score = Scores(profile_id=profile_id, value=value)
+        self.session.add(score)
+        self.session.commit()
+        self.session.close()
+
     async def get_scores_by_user_id(self, profile_id: int) -> int:
         return await asyncio.to_thread(self._get_scores_by_user_id, profile_id)

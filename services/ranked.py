@@ -38,11 +38,11 @@ class LikesButton(discord.ui.View):
 def calc_level(exp: int) -> int:
     if exp < 100:
         return 1
-    elif exp < 200:
+    elif exp < 1000:
         return 2
-    elif exp < 300:
+    elif exp < 2000:
         return 3
-    elif exp < 400:
+    elif exp < 3000:
         return 4
     return 5
 

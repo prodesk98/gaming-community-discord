@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any
+from typing import Any, List, Type
 
 from controllers.base import CONTROLLER
 from databases.session import get_session
@@ -15,13 +15,19 @@ class ProfileController(CONTROLLER):
             return self.session
         self.session = get_session()
 
-    def _add_profile(self, instance: Profile) -> None:
+    def _add_profile(self, instance: Type[Profile]) -> None:
         self.get_connection()
         self.session.add(instance)
         self.session.commit()
         self.session.close()
 
-    def _update_profile(self, instance: Profile) -> None:
+    def _update_profile(self, instance: Type[Profile]) -> None:
+        self.get_connection()
+        self.session.merge(instance)
+        self.session.commit()
+        self.session.close()
+
+    def update(self, instance: Type[Profile]) -> None:
         self.get_connection()
         self.session.merge(instance)
         self.session.commit()
@@ -48,16 +54,22 @@ class ProfileController(CONTROLLER):
         self.session.commit()
         self.session.close()
 
+    def get_profiles(self, **kwargs) -> List[Type[Profile]]:
+        self.get_connection()
+        result = self.session.query(Profile).filter_by(**kwargs).all()
+        self.session.close()
+        return result
+
     async def query(self, **kwargs) -> Any:
         return await asyncio.to_thread(self._query, **kwargs)
 
     async def remove(self, **kwargs) -> None:
         return await asyncio.to_thread(self._remove, **kwargs)
 
-    async def add_profile(self, instance: Profile) -> None:
+    async def add_profile(self, instance: Type[Profile]) -> None:
         return await asyncio.to_thread(self._add_profile, instance)
 
-    async def update_profile(self, instance: Profile) -> None:
+    async def update_profile(self, instance: Type[Profile]) -> None:
         return await asyncio.to_thread(self._update_profile, instance)
 
     async def remove_nickname(self, user_id: int, guild_id: int) -> None:
