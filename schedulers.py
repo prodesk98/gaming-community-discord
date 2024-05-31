@@ -2,6 +2,7 @@ from math import ceil
 from time import sleep
 
 from apscheduler.schedulers.blocking import BlockingScheduler
+from loguru import logger
 
 from commands.add_profile import tracker_gg_service
 from controllers.profiles import ProfileController
@@ -59,8 +60,9 @@ def stats_job():
         if XPdelta > 0:
             ScoresController().add_score(profile.id, XPdelta)  # type: ignore
 
-        print(f"Updated {profile.nick_name} stats")
-        print("Waiting 10 seconds")
+        logger.info(f"Updated {profile.nick_name} stats")
+        logger.debug("Waiting 10 seconds")
+
         sleep(10)
 
 
