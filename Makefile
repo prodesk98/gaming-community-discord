@@ -7,4 +7,4 @@ up:
 
 down:
 	docker compose down
-	docker volume rm postgres-gc-xdefiant -f
+	docker volume rm gaming-community-discord_data-xdefiant -f
