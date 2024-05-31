@@ -4,7 +4,7 @@ from controllers.profiles import ProfileController
 from services.ranked import fetch_ranked_by_profile
 
 
-async def FetchProfile(
+async def FetchProfileCommand(
     interaction: Interaction,
     member: Member
 ):

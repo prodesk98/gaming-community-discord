@@ -4,7 +4,7 @@ import discord
 from discord import Interaction, app_commands
 from discord.ext import commands
 
-from commands import AddProfileCommand, MeCommand, FetchProfile
+from commands import AddProfileCommand, MeCommand, FetchProfileCommand, Top10RankCommand
 from config import DISCORD_TOKEN, MANAGER_ROLE
 
 
@@ -60,12 +60,8 @@ async def me(interaction: Interaction):
 )
 @app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
 async def get_ranked(interaction: Interaction):
-    embed = discord.Embed(
-        title='Top 10 ranked players',
-        description='1. Player 1\n2. Player 2\n3. Player 3\n4. Player 4\n5. Player 5\n6. Player 6\n7. Player 7\n8. Player 8\n9. Player 9\n10. Player 10',
-        color=0x00ff00,
-    )
-    await interaction.response.send_message(embed=embed)  # noqa
+    await interaction.response.defer(ephemeral=False)  # noqa
+    await Top10RankCommand(interaction)
 
 
 @client.tree.command(
@@ -75,7 +71,7 @@ async def get_ranked(interaction: Interaction):
 @app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
 async def get_profile(interaction: Interaction, user: discord.Member):
     await interaction.response.defer(ephemeral=True)  # noqa
-    await FetchProfile(interaction, user)
+    await FetchProfileCommand(interaction, user)
 
 
 @client.tree.command(
