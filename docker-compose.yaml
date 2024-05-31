@@ -7,7 +7,7 @@ services:
       - APP_TYPE=bot
       - DATABASE_URL=postgresql+psycopg2://gc-xdefiant:3a56ba95118f2dda2de6da3d2da18e1a@database:5432/gc-xdefiant
     volumes:
-      - .:/app
+      - data-xdefiant:/app
 
   scheduler:
     build: .
@@ -17,7 +17,7 @@ services:
       - APP_TYPE=scheduler
       - DATABASE_URL=postgresql+psycopg2://gc-xdefiant:3a56ba95118f2dda2de6da3d2da18e1a@database:5432/gc-xdefiant
     volumes:
-      - .:/app
+      - data-xdefiant:/app
 
   database:
     image: postgres:latest
@@ -33,3 +33,4 @@ services:
 
 volumes:
     postgres-gc-xdefiant:
+    data-xdefiant:
