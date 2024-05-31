@@ -7,3 +7,4 @@ up:
 
 down:
 	docker compose down
+	docker volume rm postgres-gc-xdefiant -f
