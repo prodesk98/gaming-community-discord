@@ -18,13 +18,16 @@ HEADERS = {
     "Cache-Control": "no-cache"
 }
 GAME = 'xdefiant'
+PROXIES = {
+    "https": "http://199.167.236.12:3128"
+}
 
 
 class TrackerGGService:
     @staticmethod
     def _get_profile_stats(nickname: str, platform: str) -> None | Stats:
         url = f'{TRACKER_GG_API_ENDPOINT}/{GAME}/standard/matches/{platform}/{nickname}'
-        response = requests.get(url, headers=HEADERS)
+        response = requests.get(url, headers=HEADERS, proxies=PROXIES)
         if not response.ok:
             return
         data = response.json()
