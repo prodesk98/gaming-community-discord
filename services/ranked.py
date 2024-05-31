@@ -128,18 +128,19 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
         value=profile.wins,
         inline=True,
     )
+    # TODO: add different performance metrics (percentage of wins, K/D, etc)
     embed.add_field(
-        name='K/M (+0.2%)',
+        name='K/M',
         value=round(profile.kills / profile.matches, 2),
         inline=True,
     )
     embed.add_field(
-        name='W/L (+1.2%)',
+        name='W/L',
         value="%.1f%%" % (round(profile.wins / profile.matches, 2) * 100),
         inline=True,
     )
     embed.add_field(
-        name='Score (+0.02%)',
+        name='Score',
         value=profile.score,
         inline=True,
     )
