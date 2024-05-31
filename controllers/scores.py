@@ -22,7 +22,7 @@ class ScoresController(CONTROLLER):
         self.get_connection()
         try:
             result = self.session.query(func.sum(Scores.value)).filter(Scores.profile_id == profile_id).scalar()  # noqa
-            return result
+            return result if result is not None else 0
         except Exception as e:
             logger.error("Error getting scores by user id: %s" % e)
             raise e
