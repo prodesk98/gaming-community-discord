@@ -15,7 +15,7 @@ def stats_job():
     for profile in profiles:
         if profile.nick_name is None:
             continue
-        profile_stats = tracker_gg_service.get_profile_stats(profile.nick_name, 'ubi')
+        profile_stats = tracker_gg_service.get_profile_stats_sync(profile.nick_name, 'ubi')
         if not profile_stats:
             continue
         stats = StatsORM()

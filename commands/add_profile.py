@@ -94,7 +94,7 @@ async def AddProfileCommand(
             )
         )
 
-    profile = tracker_gg_service.get_profile_stats(nick, 'ubi')
+    profile = await tracker_gg_service.get_profile_stats(nick, 'ubi')
     if not profile:
         return await interaction.edit_original_response(
             embed=Embed(

@@ -1,3 +1,5 @@
+import asyncio
+
 import requests
 from schemas.stats import Root as Stats
 
@@ -20,7 +22,7 @@ GAME = 'xdefiant'
 
 class TrackerGGService:
     @staticmethod
-    def get_profile_stats(nickname: str, platform: str) -> None | Stats:
+    def _get_profile_stats(nickname: str, platform: str) -> None | Stats:
         url = f'{TRACKER_GG_API_ENDPOINT}/{GAME}/standard/matches/{platform}/{nickname}'
         response = requests.get(url, headers=HEADERS)
         if not response.ok:
@@ -29,3 +31,9 @@ class TrackerGGService:
         if not data:
             return
         return Stats(**data)
+
+    async def get_profile_stats(self, nickname: str, platform: str) -> None | Stats:
+        return asyncio.to_thread(self._get_profile_stats, nickname, platform)
+
+    def get_profile_stats_sync(self, nickname: str, platform: str) -> None | Stats:
+        return self._get_profile_stats(nickname, platform)
