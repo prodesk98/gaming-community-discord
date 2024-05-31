@@ -36,7 +36,7 @@ class TrackerGGService:
         return Stats(**data)
 
     async def get_profile_stats(self, nickname: str, platform: str) -> None | Stats:
-        return asyncio.to_thread(self._get_profile_stats, nickname, platform)
+        return await asyncio.to_thread(self._get_profile_stats, nickname, platform)
 
     def get_profile_stats_sync(self, nickname: str, platform: str) -> None | Stats:
         return self._get_profile_stats(nickname, platform)
