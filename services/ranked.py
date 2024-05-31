@@ -107,7 +107,7 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
     ranked_level = calc_level(exp)
 
     embed = Embed(
-        title=f"{profile.nick_name.upper()} (lvl {profile.level})",
+        title=f"{profile.nick_name} (lvl {profile.level})",
         description=f'{get_discord_icon(ranked_level)} **{ranked_level} ({get_ranked_name(ranked_level)})**\n'
                     f'{exp} xp\n'
                     f'{likes} likes',

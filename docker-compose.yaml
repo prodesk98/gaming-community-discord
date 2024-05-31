@@ -5,9 +5,9 @@ services:
     restart: always
     environment:
       - APP_TYPE=bot
-      - DATABASE_URL=sqlite:///gc-xdefiant.db
+      - DATABASE_URL=postgresql+psycopg2://gc-xdefiant:3a56ba95118f2dda2de6da3d2da18e1a@database:5432/gc-xdefiant
     volumes:
-      - discord-gc-xdefiant:/app
+      - .:/app
 
   scheduler:
     build: .
@@ -15,10 +15,21 @@ services:
     restart: always
     environment:
       - APP_TYPE=scheduler
-      - DATABASE_URL=sqlite:///gc-xdefiant.db
+      - DATABASE_URL=postgresql+psycopg2://gc-xdefiant:3a56ba95118f2dda2de6da3d2da18e1a@database:5432/gc-xdefiant
     volumes:
-      - discord-gc-xdefiant:/app
+      - .:/app
+
+  database:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=gc-xdefiant
+      - POSTGRES_PASSWORD=3a56ba95118f2dda2de6da3d2da18e1a
+      - POSTGRES_DB=gc-xdefiant
+    volumes:
+      - postgres-gc-xdefiant:/var/lib/postgresql/data
 
 
 volumes:
-    discord-gc-xdefiant:
+    postgres-gc-xdefiant:
