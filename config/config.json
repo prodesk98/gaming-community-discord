@@ -1,0 +1,9 @@
+{
+  "roles_level": {
+    "lvl_1": "Bronze",
+    "lvl_2": "Prata",
+    "lvl_3": "Ouro",
+    "lvl_4": "Platina",
+    "lvl_5": "Diamante"
+  }
+}

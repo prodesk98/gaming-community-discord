@@ -22,6 +22,15 @@ intents.message_content = False
 client = ClientBot(command_prefix='$', intents=intents)
 
 
+async def error_message(interaction: Interaction, title: str = "Error", exception: str = ""):
+    embed = discord.Embed(
+        title=title,
+        description=exception,
+        color=0xff0000,
+    )
+    await interaction.edit_original_response(embed=embed, view=None)
+
+
 @client.tree.command(
     name='ping',
     description='Check if the bot is online',
@@ -43,7 +52,10 @@ async def ping(interaction: Interaction):
 @app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
 async def add_profile(interaction: Interaction, nick: str):
     await interaction.response.defer(ephemeral=True) # noqa
-    await AddProfileCommand(interaction, nick)
+    try:
+        await AddProfileCommand(interaction, nick)
+    except Exception as e:
+        await error_message(interaction, 'Profile not added', f'Profile not added, error: {e}')
 
 
 @client.tree.command(
@@ -53,7 +65,10 @@ async def add_profile(interaction: Interaction, nick: str):
 @app_commands.checks.has_role(MANAGER_ROLE)
 async def remove_nick(interaction: Interaction, user: discord.Member):
     await interaction.response.defer(ephemeral=True) # noqa
-    await RemoveNickCommand(interaction, user)
+    try:
+        await RemoveNickCommand(interaction, user)
+    except Exception as e:
+        await error_message(interaction, 'Nickname not removed', f'Nickname not removed, error: {e}')
 
 
 @client.tree.command(
@@ -63,7 +78,10 @@ async def remove_nick(interaction: Interaction, user: discord.Member):
 @app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
 async def me(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)  # noqa
-    await MeCommand(interaction)
+    try:
+        await MeCommand(interaction)
+    except Exception as e:
+        await error_message(interaction, exception=str(e))
 
 
 @client.tree.command(
@@ -73,7 +91,10 @@ async def me(interaction: Interaction):
 @app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
 async def get_ranked(interaction: Interaction):
     await interaction.response.defer(ephemeral=False)  # noqa
-    await Top10RankCommand(interaction)
+    try:
+        await Top10RankCommand(interaction)
+    except Exception as e:
+        await error_message(interaction, exception=str(e))
 
 
 @client.tree.command(
@@ -83,7 +104,10 @@ async def get_ranked(interaction: Interaction):
 @app_commands.checks.has_role(MANAGER_ROLE)
 async def remove_profile(interaction: Interaction, user: discord.Member):
     await interaction.response.defer(ephemeral=True) # noqa
-    await RemoveProfileCommand(interaction, user)
+    try:
+        await RemoveProfileCommand(interaction, user)
+    except Exception as e:
+        await error_message(interaction, exception=str(e))
 
 
 @client.tree.command(
@@ -93,7 +117,10 @@ async def remove_profile(interaction: Interaction, user: discord.Member):
 @app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
 async def get_profile(interaction: Interaction, user: discord.Member):
     await interaction.response.defer(ephemeral=True)  # noqa
-    await FetchProfileCommand(interaction, user)
+    try:
+        await FetchProfileCommand(interaction, user)
+    except Exception as e:
+        await error_message(interaction, exception=str(e))
 
 
 @client.tree.command(
@@ -119,7 +146,7 @@ async def error(interaction: Interaction, error: Any):
         description=error,
         color=0xff0000,
     )
-    await interaction.response.send_message(embed=embed)  # noqa
+    await interaction.response.send_message(embed=embed, ephemeral=True)  # noqa
 
 
 if __name__ == '__main__':
