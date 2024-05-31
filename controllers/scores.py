@@ -44,3 +44,6 @@ class ScoresController(CONTROLLER):
 
     async def get_scores_by_user_id(self, profile_id: int) -> int:
         return await asyncio.to_thread(self._get_scores_by_user_id, profile_id)
+
+    async def aadd_score(self, profile_id: int, value: int):
+        return await asyncio.to_thread(self.add_score, profile_id, value)

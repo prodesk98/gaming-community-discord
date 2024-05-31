@@ -4,7 +4,6 @@ from loguru import logger
 from sqlalchemy import func, desc, select, asc
 
 from controllers.base import CONTROLLER
-from databases.session import get_session
 from models.profile import Profile
 from models.scores import Scores
 
@@ -27,12 +26,13 @@ class RankedController(CONTROLLER):
                     Profile.id,
                     Profile.user_id,
                     Profile.nick_name,
-                    Profile.level,
                     func.sum(Scores.value).label("total_score")
                 )
                 .join(Profile)
                 .where(Profile.guild_id == guild_id)  # type: ignore
                 .where(Scores.profile_id == Profile.id)  # type: ignore
+                .where(Profile.nick_name.isnot(None))  # type: ignore
+                .where(Scores.created_at >= func.datetime('now', '-8 days'))  # expires in 8 days
                 .group_by(Profile.id, Profile.user_id)
                 .order_by(desc("total_score"), asc("id"))
                 .limit(limit)

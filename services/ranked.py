@@ -107,10 +107,9 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
     ranked_level = calc_level(exp)
 
     embed = Embed(
-        title=f"{profile.nick_name} (lvl {profile.level})",
-        description=f'{get_discord_icon(ranked_level)} **{ranked_level} ({get_ranked_name(ranked_level)})**\n'
-                    f'{exp} xp\n'
-                    f'{likes} likes',
+        title=f"{profile.nick_name} ({profile.level} lvl)",
+        description=f'{exp} xp ({get_discord_icon(ranked_level)} {ranked_level} lvl - {get_ranked_name(ranked_level)})\n'
+                    f'{likes} likes\n\n',
         color=get_color(ranked_level),
     )
     embed.add_field(
@@ -123,9 +122,35 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
         value=profile.assists,
         inline=True,
     )
+    embed.add_field(
+        name='Wins',
+        value=profile.wins,
+        inline=True,
+    )
+    embed.add_field(
+        name='K/M (+0.2%)',
+        value=round(profile.kills / profile.matches, 2),
+        inline=True,
+    )
+    embed.add_field(
+        name='W/L (+1.2%)',
+        value="%.1f%%" % (round(profile.wins / profile.matches, 2) * 100),
+        inline=True,
+    )
+    embed.add_field(
+        name='Score (+0.02%)',
+        value=profile.score,
+        inline=True,
+    )
+
+    author = await interaction.guild.fetch_member(profile.user_id)
 
     ranked_icon = File(f"assets/scores/lvl_{ranked_level}.png", filename=f"ranked.png")
     embed.set_thumbnail(url=f"attachment://ranked.png")
+    embed.set_author(
+        name=author.display_name,
+        icon_url=author.avatar
+    )
 
     me = await ProfileController().query(user_id=interaction.user.id)
 

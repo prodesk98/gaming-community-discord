@@ -5,6 +5,7 @@ from models.profile import Profile
 from schemas.stats import StatsORM
 from services.tracker_gg import TrackerGGService
 from controllers.profiles import ProfileController
+from controllers.scores import ScoresController
 
 tracker_gg_service = TrackerGGService()
 
@@ -32,12 +33,15 @@ class ConfirmationView(discord.ui.View):
                 assists=self.stats.assists,
                 score=self.stats.score,
             )
-            has_profile = await ProfileController().query(user_id=interaction.user.id)
+            has_profile = await ProfileController().query(user_id=interaction.user.id, guild_id=interaction.guild_id)
             if has_profile:
                 has_profile.nick_name = self.nick
                 await ProfileController().update_profile(has_profile)
             else:
                 await ProfileController().add_profile(profile)
+                profile = await ProfileController().query(user_id=interaction.user.id, guild_id=interaction.guild_id)
+                if profile:
+                    await ScoresController().aadd_score(profile.id, 0)
         except Exception as e:
             return await self.interaction.edit_original_response(
                 embed=Embed(
