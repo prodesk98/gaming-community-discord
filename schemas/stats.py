@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from datetime import datetime
 
@@ -28,6 +28,13 @@ class SegmentAttributes(BaseModel):
 
 class Stat(BaseModel):
     value: Optional[float | int] = 0
+
+    # if value is None return 0
+    @field_validator("value")
+    def value(cls, v):
+        if v is None:
+            return 0
+        return v
 
 
 class Stats(BaseModel):
