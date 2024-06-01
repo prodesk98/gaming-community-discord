@@ -61,7 +61,7 @@ class TrackerGGService:
         score = re.sub(r'\D', '', _score.replace(',', ''))
         _assists = next(iter(dom.xpath('//*[@id="app"]/div[2]/div[3]/div/main/div[3]/div[3]/div/div/div[1]/div[4]/div[1]/div/div[2]/span[2]/span[1]'))).text
         assists = re.sub(r'\D', '', _assists.replace(',', ''))
-        _mvp = next(iter(dom.xpath('//*[@id="app"]/div[2]/div[3]/div/main/div[3]/div[3]/div/div/div[1]/div[4]/div[2]/div/div[2]/span[2]/span[1]'))).text
+        _mvp = next(iter(dom.xpath('//*[@id="app"]/div[2]/div[3]/div/main/div[3]/div[3]/div/div/div[1]/div[4]/div[2]/div/div[2]/span[2]/span'))).text
         mvp = re.sub(r'\D', '', _mvp.replace(',', ''))
 
         return StatsORM(
