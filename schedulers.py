@@ -16,8 +16,12 @@ def stats_job():
         if profile.nick_name is None:
             continue
 
-        stats = tracker_gg_service.get_profile_site(profile.nick_name, 'ubi')
-        if not stats:
+        try:
+            stats = tracker_gg_service.get_profile_site(profile.nick_name, 'ubi')
+            if not stats:
+                continue
+        except Exception as e:
+            logger.error(f"Error: {e}")
             continue
 
         # calculate xp
