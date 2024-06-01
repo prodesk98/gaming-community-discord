@@ -103,7 +103,7 @@ async def AddProfileCommand(
         return await interaction.edit_original_response(
             embed=Embed(
                 title='Connect your account to tracker.gg',
-                description=f'Profile {nick} not found, please connect your account to tracker.gg',
+                description=f'Profile {nick} not found, please search your account on tracker.gg',
                 color=0xff0000,
                 url='https://tracker.gg/'
             )
