@@ -7,7 +7,6 @@ from loguru import logger
 from commands.add_profile import tracker_gg_service
 from controllers.profiles import ProfileController
 from controllers.scores import ScoresController
-from schemas.stats import StatsORM
 
 
 def stats_job():
@@ -16,25 +15,12 @@ def stats_job():
     for profile in profiles:
         if profile.nick_name is None:
             continue
-        profile_stats = tracker_gg_service.get_profile_stats_sync(profile.nick_name, 'ubi')
-        if not profile_stats:
-            continue
-        stats = StatsORM()
-        stats.level = next(iter(next(iter(profile_stats.data.matches)).segments)).stats.playerLevel.value
 
-        for match in profile_stats.data.matches:
-            for segment in match.segments:
-                if segment.type != 'overview':
-                    continue
-                stats.matches += segment.stats.matchesCompleted.value
-                stats.wins += segment.stats.matchesWon.value
-                stats.losses += segment.stats.matchesLost.value
-                stats.kills += segment.stats.kills.value
-                stats.score += segment.stats.score.value
-                stats.assists += segment.stats.assists.value
+        stats = tracker_gg_service.get_profile_site(profile.nick_name, 'ubi')
+        if not stats:
+            continue
 
         # calculate xp
-
         # weights
         weight_kills = 2
         weight_wins = 1.2
@@ -69,7 +55,7 @@ def stats_job():
 
 stats_job()
 scheduler = BlockingScheduler()
-scheduler.add_job(stats_job, 'interval', minutes=30)
+scheduler.add_job(stats_job, 'interval', minutes=15)
 
 if __name__ == '__main__':
     scheduler.start()
