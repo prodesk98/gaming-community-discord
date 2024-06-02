@@ -1,8 +1,9 @@
 from typing import Any
 
 import discord
-from discord import Interaction, app_commands
+from discord import Interaction, app_commands, Message
 from discord.ext import commands
+from loguru import logger
 
 from commands import (
     AddProfileCommand, MeCommand, FetchProfileCommand,
@@ -16,9 +17,14 @@ class ClientBot(commands.Bot):
         print(f'Logged on as {self.user}!')
         await self.tree.sync()
 
+    async def on_message(self, message: Message, /) -> None:
+        if message.author == self.user:
+            return
+        logger.info(f'{message.author} sent a message: {message.content}')
+
 
 intents = discord.Intents.default()
-intents.message_content = False
+intents.message_content = True
 client = ClientBot(command_prefix='$', intents=intents)
 
 
@@ -29,6 +35,14 @@ async def error_message(interaction: Interaction, title: str = "Error", exceptio
         color=0xff0000,
     )
     await interaction.edit_original_response(embed=embed, view=None)
+
+
+@client.tree.command(
+    name='mudae',
+    description='Mudae Game',
+)
+async def mudae(interaction: Interaction):
+    await interaction.response.send_message('$wa', ephemeral=False)  # noqa
 
 
 @client.tree.command(
@@ -51,7 +65,7 @@ async def ping(interaction: Interaction):
 )
 @app_commands.checks.cooldown(1, 30, key=lambda i: (i.guild_id, i.user.id))
 async def add_profile(interaction: Interaction, nick: str):
-    await interaction.response.defer(ephemeral=True) # noqa
+    await interaction.response.defer(ephemeral=True)  # noqa
     try:
         await AddProfileCommand(interaction, nick)
     except Exception as e:
@@ -64,7 +78,7 @@ async def add_profile(interaction: Interaction, nick: str):
 )
 @app_commands.checks.has_role(MANAGER_ROLE)
 async def remove_nick(interaction: Interaction, user: discord.Member):
-    await interaction.response.defer(ephemeral=True) # noqa
+    await interaction.response.defer(ephemeral=True)  # noqa
     try:
         await RemoveNickCommand(interaction, user)
     except Exception as e:
@@ -103,7 +117,7 @@ async def get_ranked(interaction: Interaction):
 )
 @app_commands.checks.has_role(MANAGER_ROLE)
 async def remove_profile(interaction: Interaction, user: discord.Member):
-    await interaction.response.defer(ephemeral=True) # noqa
+    await interaction.response.defer(ephemeral=True)  # noqa
     try:
         await RemoveProfileCommand(interaction, user)
     except Exception as e:
