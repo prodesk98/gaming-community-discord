@@ -47,8 +47,15 @@ def stats_job():
         profile.assists = stats.assists
         ProfileController().update(profile)
 
+        scoresController = ScoresController()
         if XPdelta > 0:
-            ScoresController().add_score(profile.id, XPdelta)  # type: ignore
+            scoresController.add_score(profile.id, XPdelta)  # type: ignore
+
+        weekly = scoresController.get_weekly(profile.id)  # type: ignore
+
+        if weekly is None:
+            logger.info(f"Creating weekly stats for {profile.nick_name}")
+            scoresController.insert_weekly(stats, profile.id)  # type: ignore
 
         logger.info(f"Added {XPdelta} XP to {profile.nick_name}")
         logger.info(f"Updated {profile.nick_name} stats")
