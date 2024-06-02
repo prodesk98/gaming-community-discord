@@ -18,7 +18,7 @@ async def Top10RankCommand(
         if n == 0:
             top1 = user_id
         ranked_level = calc_level(total_score)
-        body += f"{n + 1}. <@{user_id}> **{nick}** ({get_discord_icon_by_level(ranked_level)} {ranked_level} lvl / {total_score} xp)\n\n"
+        body += f"{n + 1}. <@{user_id}> **{nick}** ({get_discord_icon_by_level(ranked_level)} {ranked_level} lvl / {total_score} xp)\n"
 
     if not body:
         body = "No ranked players found."
