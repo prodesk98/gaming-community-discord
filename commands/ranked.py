@@ -24,7 +24,7 @@ async def Top10RankCommand(
         body = "No ranked players found."
 
     embed_ranked = Embed(
-        title="Top 10 Rank",
+        title=":trophy: Top 10 Rank",
         description=body,
         color=0x2F3136
     )
