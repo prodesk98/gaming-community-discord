@@ -1,9 +1,8 @@
 from typing import Any
 
 import discord
-from discord import Interaction, app_commands, Message
+from discord import Interaction, app_commands
 from discord.ext import commands
-from loguru import logger
 
 from commands import (
     AddProfileCommand, MeCommand, FetchProfileCommand,
@@ -17,14 +16,9 @@ class ClientBot(commands.Bot):
         print(f'Logged on as {self.user}!')
         await self.tree.sync()
 
-    async def on_message(self, message: Message, /) -> None:
-        if message.author == self.user:
-            return
-        logger.info(f'{message.author} sent a message: {message.content}')
-
 
 intents = discord.Intents.default()
-intents.message_content = True
+intents.message_content = False
 client = ClientBot(command_prefix='$', intents=intents)
 
 
@@ -35,14 +29,6 @@ async def error_message(interaction: Interaction, title: str = "Error", exceptio
         color=0xff0000,
     )
     await interaction.edit_original_response(embed=embed, view=None)
-
-
-@client.tree.command(
-    name='mudae',
-    description='Mudae Game',
-)
-async def mudae(interaction: Interaction):
-    await interaction.response.send_message('$wa', ephemeral=False)  # noqa
 
 
 @client.tree.command(
