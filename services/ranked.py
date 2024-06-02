@@ -128,7 +128,6 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
         value=profile.wins,
         inline=True,
     )
-    # TODO: add different performance metrics (percentage of wins, K/D, etc)
     embed.add_field(
         name='K/M',
         value=round(profile.kills / profile.matches, 2),
@@ -144,6 +143,34 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
         value=profile.score,
         inline=True,
     )
+
+    # Weekly stats
+    weekly_stats = await ScoresController().aget_weekly(profile.id)
+    if weekly_stats:
+        kills_diff = profile.kills - weekly_stats.kills
+        assist_diff = profile.assists - weekly_stats.assist
+        wins_diff = profile.wins - weekly_stats.wons
+
+        weekly_kills_percent = round(
+            kills_diff / profile.kills * 100,
+            2
+        )
+        weekly_assist_percent = round(
+            assist_diff / profile.assists * 100,
+            2
+        )
+        weekly_wons_percent = round(
+            wins_diff / profile.wins * 100,
+            2
+        )
+
+        EMOJI_INCREASE = '<:increase:1246942607775371388>'
+        embed.add_field(
+            name='Weekly Stats',
+            value=f'Kills: +%i / %.2f%% %s\n' % (kills_diff, weekly_kills_percent, EMOJI_INCREASE if kills_diff > 0 else '') +
+                  f'Assists: +%i / %.2f%% %s\n' % (assist_diff, weekly_assist_percent, EMOJI_INCREASE if assist_diff > 0 else '') +
+                  f'Wins: +%i / %.2f%% %s\n' % (wins_diff, weekly_wons_percent, EMOJI_INCREASE if wins_diff > 0 else ''),
+        )
 
     author = await interaction.guild.fetch_member(profile.user_id)
 

@@ -85,3 +85,6 @@ class ScoresController(CONTROLLER):
 
     async def aadd_score(self, profile_id: int, value: int):
         return await asyncio.to_thread(self.add_score, profile_id, value)
+
+    async def aget_weekly(self, profile_id: int) -> Weekly | None:
+        return await asyncio.to_thread(self.get_weekly, profile_id)
