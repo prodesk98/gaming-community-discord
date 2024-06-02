@@ -18,7 +18,7 @@ async def Top10RankCommand(
         if n == 0:
             top1 = user_id
         ranked_level = calc_level(total_score)
-        body += f"{n + 1}. <@{user_id}> **{nick}** ({get_discord_icon_by_level(ranked_level)} {ranked_level} lvl / {total_score} xp)\n"
+        body += f"{n + 1}. <@{user_id}> **{nick}** ({get_discord_icon_by_level(ranked_level)} {ranked_level} lvl / {total_score} xp)\n\n"
 
     if not body:
         body = "No ranked players found."
@@ -32,7 +32,7 @@ async def Top10RankCommand(
     if top1 is not None:
         top1_member = interaction.guild.get_member(top1)
         if top1_member is not None:
-            embed_ranked.set_thumbnail(
+            embed_ranked.set_image(
                 url=top1_member.avatar
             )
 
