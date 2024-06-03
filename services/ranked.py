@@ -153,15 +153,15 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
         losses_diff = profile.losses - weekly_stats.losses
 
         weekly_kills_percent = round(
-            kills_diff / profile.kills * 100,
+            (1 - (weekly_stats.kills / profile.kills)) * 100,
             2
         )
         weekly_assist_percent = round(
-            assist_diff / profile.assists * 100,
+            (1 - (weekly_stats.assist / profile.assists)) * 100,
             2
         )
         weekly_wons_percent = round(
-            wins_diff / profile.wins * 100,
+            (1 - (weekly_stats.wons / profile.wins)) * 100,
             2
         )
         weekly_matches = wins_diff + losses_diff
