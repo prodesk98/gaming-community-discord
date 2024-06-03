@@ -150,6 +150,7 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
         kills_diff = profile.kills - weekly_stats.kills
         assist_diff = profile.assists - weekly_stats.assist
         wins_diff = profile.wins - weekly_stats.wons
+        losses_diff = profile.losses - weekly_stats.losses
 
         weekly_kills_percent = round(
             kills_diff / profile.kills * 100,
@@ -163,7 +164,7 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
             wins_diff / profile.wins * 100,
             2
         )
-        matches = weekly_stats.wons + weekly_stats.losses
+        weekly_matches = wins_diff + losses_diff
 
         EMOJI_INCREASE = '<:increase:1246942607775371388>'
         embed.add_field(
@@ -171,7 +172,7 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
             value=f'Kills: +%i / %.2f%% %s\n' % (kills_diff, weekly_kills_percent, EMOJI_INCREASE if kills_diff > 0 else '') +
                   f'Assists: +%i / %.2f%% %s\n' % (assist_diff, weekly_assist_percent, EMOJI_INCREASE if assist_diff > 0 else '') +
                   f'Wins: +%i / %.2f%% %s\n' % (wins_diff, weekly_wons_percent, EMOJI_INCREASE if wins_diff > 0 else '') +
-                  f'K/M: %.2f\n' % (round(weekly_stats.kills / matches, 2) if matches > 0 else 0),
+                  f'K/M: %.2f\n' % (round(kills_diff / weekly_matches, 2) if weekly_matches > 0 else 0),
         )
 
     author = await interaction.guild.fetch_member(profile.user_id)
