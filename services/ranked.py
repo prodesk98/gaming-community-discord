@@ -170,7 +170,7 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
             value=f'Kills: +%i / %.2f%% %s\n' % (kills_diff, weekly_kills_percent, EMOJI_INCREASE if kills_diff > 0 else '') +
                   f'Assists: +%i / %.2f%% %s\n' % (assist_diff, weekly_assist_percent, EMOJI_INCREASE if assist_diff > 0 else '') +
                   f'Wins: +%i / %.2f%% %s\n' % (wins_diff, weekly_wons_percent, EMOJI_INCREASE if wins_diff > 0 else '') +
-                  f'K/M: %.2f\n' % (round(profile.kills / (weekly_stats.wons + weekly_stats.losses), 2)),
+                  f'K/M: %.2f\n' % (round(weekly_stats.kills / (weekly_stats.wons + weekly_stats.losses), 2)),
         )
 
     author = await interaction.guild.fetch_member(profile.user_id)
