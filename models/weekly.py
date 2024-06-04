@@ -7,7 +7,7 @@ class Weekly(Base):
     __tablename__ = 'weekly'
 
     id = Column(Integer, primary_key=True)
-    profile_id = Column(Integer, ForeignKey('profiles.id'))
+    profile_id = Column(Integer, ForeignKey('profiles.id', ondelete='CASCADE'))
     level = Column(Integer)
     kills = Column(Integer)
     wons = Column(Integer)

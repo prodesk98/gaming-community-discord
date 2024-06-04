@@ -7,6 +7,6 @@ class Likes(Base):
     __tablename__ = 'likes'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    profile_id = Column(Integer, ForeignKey('profiles.id'))
+    profile_id = Column(Integer, ForeignKey('profiles.id', ondelete='CASCADE'))
     target_id = Column(Integer, ForeignKey('profiles.id'))
     created_at = Column(DateTime, server_default=func.now())

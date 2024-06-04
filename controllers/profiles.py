@@ -66,7 +66,7 @@ class ProfileController(CONTROLLER):
         finally:
             self.close_connection()
 
-    def _query(self, **kwargs) -> Any | None:
+    def _query(self, **kwargs) -> Profile | None:
         self.get_connection()
         try:
             result = self.session.query(Profile).filter_by(**kwargs).scalar()
@@ -100,7 +100,7 @@ class ProfileController(CONTROLLER):
         finally:
             self.close_connection()
 
-    async def query(self, **kwargs) -> Any:
+    async def query(self, **kwargs) -> Profile | None:
         return await asyncio.to_thread(self._query, **kwargs)
 
     async def remove(self, **kwargs) -> None:
@@ -114,3 +114,6 @@ class ProfileController(CONTROLLER):
 
     async def remove_nickname(self, user_id: int, guild_id: int) -> None:
         return await asyncio.to_thread(self._remove_nickname, user_id, guild_id)
+
+    async def aget_profiles(self, **kwargs) -> List[Type[Profile]]:
+        return await asyncio.to_thread(self.get_profiles, **kwargs)

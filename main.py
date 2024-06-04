@@ -6,7 +6,7 @@ from discord.ext import commands
 
 from commands import (
     AddProfileCommand, MeCommand, FetchProfileCommand,
-    Top10RankCommand, RemoveNickCommand, RemoveProfileCommand
+    Top10RankCommand, RemoveNickCommand, RemoveProfileCommand,
 )
 from config import DISCORD_TOKEN, MANAGER_ROLE
 
@@ -102,10 +102,10 @@ async def get_ranked(interaction: Interaction):
     description='Remove a profile',
 )
 @app_commands.checks.has_role(MANAGER_ROLE)
-async def remove_profile(interaction: Interaction, user: discord.Member):
+async def remove_profile(interaction: Interaction, nick: str):
     await interaction.response.defer(ephemeral=True)  # noqa
     try:
-        await RemoveProfileCommand(interaction, user)
+        await RemoveProfileCommand(interaction, nick)
     except Exception as e:
         await error_message(interaction, exception=str(e))
 
