@@ -8,3 +8,6 @@ up:
 down:
 	docker compose down
 	docker volume rm gaming-community-discord_data-xdefiant -f
+
+start:
+	make down && make build && make up
