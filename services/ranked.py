@@ -166,7 +166,7 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
         )
         weekly_matches = wins_diff + losses_diff
 
-        EMOJI_INCREASE = '<:increase:1246942607775371388>'
+        EMOJI_INCREASE = '<:increase:1247709954958164028>'
         embed.add_field(
             name='Weekly Stats',
             value=f'Kills: +%i / %.2f%% %s\n' % (kills_diff, weekly_kills_percent, EMOJI_INCREASE if kills_diff > 0 else '') +

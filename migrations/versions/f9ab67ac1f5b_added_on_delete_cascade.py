@@ -18,10 +18,11 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # likes table
+    # likes table: profile_id
     op.drop_constraint('likes_profile_id_fkey', 'likes', type_='foreignkey')
     op.create_foreign_key('likes_profile_id_fkey', 'likes', 'profiles', ['profile_id'], ['id'], ondelete='CASCADE')
 
+    # likes table: target_id
     op.drop_constraint('likes_target_id_fkey', 'likes', type_='foreignkey')
     op.create_foreign_key('likes_target_id_fkey', 'likes', 'profiles', ['target_id'], ['id'], ondelete='CASCADE')
 
