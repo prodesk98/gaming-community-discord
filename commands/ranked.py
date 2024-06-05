@@ -1,4 +1,6 @@
 from discord import Interaction, Embed
+from loguru import logger
+
 from controllers.ranked import RankedController
 from services.ranked import get_discord_icon_by_level, calc_level
 
@@ -10,7 +12,7 @@ async def Top10RankCommand(
         interaction.guild_id, 10
     )
 
-    body = ""
+    lines = []
 
     top1 = None
     for n, rank in enumerate(ranking):
@@ -18,21 +20,19 @@ async def Top10RankCommand(
         if n == 0:
             top1 = user_id
         ranked_level = calc_level(total_score)
-        body += f"{n + 1}. <@{user_id}> **{nick}** ({get_discord_icon_by_level(ranked_level)} {ranked_level} lvl / {total_score} xp)\n"
-
-    if not body:
-        body = "No ranked players found."
+        content = f"{n + 1}. <@{user_id}> **{nick}** {get_discord_icon_by_level(ranked_level)} ({total_score} xp)"
+        lines.append(content)
 
     embed_ranked = Embed(
         title=":trophy: Top 10 Rank",
-        description=body,
+        description="\n".join(lines) if len(lines) > 0 else "No ranked players found.",
         color=0x2F3136
     )
 
     if top1 is not None:
-        top1_member = interaction.guild.get_member(top1)
+        top1_member = await interaction.guild.fetch_member(top1)
         if top1_member is not None:
-            embed_ranked.set_image(
+            embed_ranked.set_thumbnail(
                 url=top1_member.avatar
             )
 
