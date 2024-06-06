@@ -190,7 +190,7 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
 
     banner_image = await create_player_profile_banner(
         player_name=profile.nick_name,
-        weekly_rank="#0",
+        weekly_rank="#0",  # TODO: Implement weekly rank by index
         level=profile.level,
         exp_total=exp,
         avatar_url=author.avatar.url
