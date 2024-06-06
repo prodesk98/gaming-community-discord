@@ -6,8 +6,6 @@ import requests
 from tempfile import NamedTemporaryFile
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
-from services.ranked import calc_level
-
 # Configurações iniciais
 width, height = 800, 200  # Tamanho da imagem
 background_color = (45, 45, 45)  # Cor de fundo
@@ -18,10 +16,6 @@ border_color = (35, 35, 35)  # Cor da borda
 font_size = 20
 font_size_small = 11
 font_size_large = 30
-
-# Criar a imagem vazia com fundo
-image = Image.new("RGB", (width, height), background_color)
-draw = ImageDraw.Draw(image)
 
 # Carregar fontes
 font = ImageFont.truetype("assets/fonts/lato/Lato-Black.ttf", font_size)
@@ -67,10 +61,15 @@ def _create_banner(
         exp_total: int,
         avatar_url: str
 ) -> str | PathLike:
+    # Criar a imagem vazia com fundo
+    image = Image.new("RGB", (width, height), background_color)
+    draw = ImageDraw.Draw(image)
+
     # Carregar e processar a imagem do jogador
     player_image_path = _download_image(avatar_url)
     player_image = create_circular_image(player_image_path, size=(100, 100))
 
+    from services.ranked import calc_level
     ranked_level = calc_level(exp_total)
 
     medal_image = Image.open(f"assets/scores/lvl_{ranked_level}.png").convert("RGBA")

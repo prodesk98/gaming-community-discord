@@ -9,6 +9,7 @@ from controllers.profiles import ProfileController
 from controllers.scores import ScoresController
 from models.likes import Likes
 from models.profile import Profile
+from services.banner import create_player_profile_banner
 
 
 class LikesButton(discord.ui.View):
@@ -187,8 +188,20 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
             role = discord.utils.get(interaction.guild.roles, name=role_level)
             await author.add_roles(role)
 
+    banner_image = await create_player_profile_banner(
+        player_name=profile.nick_name,
+        weekly_rank="#0",
+        level=profile.level,
+        exp_total=exp,
+        avatar_url=author.avatar.url
+    )
+
+    banner = File(banner_image, filename="banner.jpg")
+    embed.set_image(url=f"attachment://banner.jpg")
+
     ranked_icon = File(f"assets/scores/lvl_{ranked_level}.png", filename=f"ranked.png")
     embed.set_thumbnail(url=f"attachment://ranked.png")
+
     embed.set_author(
         name=author.display_name,
         icon_url=author.avatar
@@ -199,7 +212,7 @@ async def fetch_ranked_by_profile(interaction: Interaction, profile: Profile) ->
     has_liked = await LikesController().has_like(profile_id=me.id, target_id=profile.id)
     await interaction.edit_original_response(
         embed=embed,
-        attachments=[ranked_icon],
+        attachments=[banner, ranked_icon],
         view=LikesButton(interaction=interaction, profile_id=me.id, target_id=profile.id)
         if profile.user_id != me.user_id and not has_liked else None,
     )
