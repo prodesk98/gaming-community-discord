@@ -26,6 +26,7 @@ class RankedController(CONTROLLER):
                     Profile.id,
                     Profile.user_id,
                     Profile.nick_name,
+                    Profile.level,
                     func.sum(Scores.value).label("total_score")
                 )
                 .join(Profile)
