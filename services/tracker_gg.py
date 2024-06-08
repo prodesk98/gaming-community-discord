@@ -38,7 +38,7 @@ class TrackerGGService:
             "maxTimeout": 60000,
             "proxy": {
                 "url": PROXY_IP,
-            },
+            } if PROXY_IP else {},
             "cookies": []
         }
         resp = requests.post(CF_RESOLVER_URL, headers=headers, json=data)
