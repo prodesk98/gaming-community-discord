@@ -31,8 +31,6 @@ services:
       - APP_TYPE=bot
       - DATABASE_URL=postgresql+psycopg2://gc-xdefiant:3a56ba95118f2dda2de6da3d2da18e1a@database:5432/gc-xdefiant
       - CF_RESOLVER_URL=http://cf_resolver:8191/v1
-    volumes:
-      - data-xdefiant:/app
     depends_on:
       database:
         condition: service_healthy
@@ -45,12 +43,9 @@ services:
       - APP_TYPE=scheduler
       - DATABASE_URL=postgresql+psycopg2://gc-xdefiant:3a56ba95118f2dda2de6da3d2da18e1a@database:5432/gc-xdefiant
       - CF_RESOLVER_URL=http://cf_resolver:8191/v1
-    volumes:
-      - data-xdefiant:/app
     depends_on:
       database:
         condition: service_healthy
 
 volumes:
     postgres-gc-xdefiant:
-    data-xdefiant:
