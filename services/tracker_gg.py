@@ -1,6 +1,8 @@
 import asyncio
 import json
 import re
+from time import time
+from typing import List
 
 import requests
 from loguru import logger
@@ -26,11 +28,41 @@ HEADERS = {
     "Cache-Control": "no-cache"
 }
 GAME = 'xdefiant'
+CF_BM = dict(
+    cf_bm="",
+    timestamp=0
+)
 
 
 class TrackerGGService:
     @staticmethod
-    def _cf_resolve(url: str) -> bytes | str | None:
+    def set_cookie_cf_bm(cookies: List[dict]) -> None:
+        cookie = next((cookie for cookie in cookies if cookie.get("name") == "__cf_bm"), None)
+        if not cookie:
+            return
+
+        cf_bm = cookie.get("value")
+        expiry = cookie.get("expiry")
+
+        if not cf_bm or not expiry:
+            return
+
+        CF_BM["cf_bm"] = cf_bm
+        CF_BM["timestamp"] = expiry
+
+    @staticmethod
+    def get_cookie_cf_bm() -> dict:
+        return dict(
+            __cf_bm=CF_BM["cf_bm"],
+        )
+
+    @staticmethod
+    def verify_cf_bm() -> bool:
+        # verifica se o cookie cf_bm está expirado
+        # expira em 30 minutos
+        return 0 < time() < CF_BM["timestamp"]
+
+    def _cf_resolve(self, url: str) -> bytes | str | None:
         headers = {"Content-Type": "application/json"}
         data = {
             "cmd": "request.get",
@@ -47,11 +79,40 @@ class TrackerGGService:
         data = json.loads(resp.content)
         if data.get("status") != "ok":
             return
-        return data.get("solution", {}).get("response", "")
+        solution = data.get("solution", {})
+        cookies = solution.get("cookies", [])
+        self.set_cookie_cf_bm(cookies)
+        return solution.get("response", "")
+
+    def request(self, url: str) -> bytes | str | None:
+        verify_cookie_cf_bm = self.verify_cf_bm()
+        logger.info(f"verify_cookie_cf_bm: {verify_cookie_cf_bm}")
+        logger.info(f"CF_BM: {CF_BM}")
+        if not verify_cookie_cf_bm:
+            logger.info("CF_BM expired, requesting cf_resolve...")
+            response = self._cf_resolve(url)
+            if response is None:
+                return
+            return response
+        response = requests.get(url, headers=HEADERS, cookies=self.get_cookie_cf_bm(),
+                                proxies={"http": PROXY_IP, "https": PROXY_IP} if PROXY_IP else {})
+        if not response.ok:
+            return
+        self.set_cookie_cf_bm(
+            [
+                dict(
+                    name=cookie.name,
+                    value=cookie.value,
+                    expiry=cookie.expires
+                )
+                for cookie in response.cookies
+            ]
+        )
+        return response.content
 
     def _get_profile_stats(self, nickname: str, platform: str) -> None | Stats:
         url = f'{TRACKER_GG_API_ENDPOINT}/{GAME}/standard/matches/{platform}/{nickname}'
-        response = self._cf_resolve(url)
+        response = self.request(url)
         data = json.loads(response)
         if data is None:
             return
@@ -59,7 +120,7 @@ class TrackerGGService:
 
     def _get_profile_site(self, nickname: str, platform: str) -> StatsORM | None:
         url = f'https://tracker.gg/{GAME}/profile/{platform}/{nickname}/overview'
-        response = self._cf_resolve(url)
+        response = self.request(url)
         if response is None:
             return
 
