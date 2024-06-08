@@ -1,4 +1,10 @@
 services:
+  cf_resolver:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    environment:
+      LOG_LEVEL: info
+    restart: unless-stopped
+
   database:
     image: postgres:latest
     container_name: postgres
@@ -24,6 +30,7 @@ services:
     environment:
       - APP_TYPE=bot
       - DATABASE_URL=postgresql+psycopg2://gc-xdefiant:3a56ba95118f2dda2de6da3d2da18e1a@database:5432/gc-xdefiant
+      - CF_RESOLVER_URL=http://cf_resolver:8191/v1
     volumes:
       - data-xdefiant:/app
     depends_on:
@@ -37,6 +44,7 @@ services:
     environment:
       - APP_TYPE=scheduler
       - DATABASE_URL=postgresql+psycopg2://gc-xdefiant:3a56ba95118f2dda2de6da3d2da18e1a@database:5432/gc-xdefiant
+      - CF_RESOLVER_URL=http://cf_resolver:8191/v1
     volumes:
       - data-xdefiant:/app
     depends_on:

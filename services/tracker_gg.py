@@ -1,9 +1,12 @@
 import asyncio
+import json
 import re
 
 import requests
+from loguru import logger
 from lxml import etree
 from schemas.stats import Root as Stats, StatsORM
+from config import CF_RESOLVER_URL, PROXY_IP
 
 from bs4 import BeautifulSoup
 
@@ -23,31 +26,45 @@ HEADERS = {
     "Cache-Control": "no-cache"
 }
 GAME = 'xdefiant'
-PROXIES = {
-    "https": "http://199.167.236.12:3128"
-}
 
 
 class TrackerGGService:
     @staticmethod
-    def _get_profile_stats(nickname: str, platform: str) -> None | Stats:
+    def _cf_resolve(url: str) -> bytes | str | None:
+        headers = {"Content-Type": "application/json"}
+        data = {
+            "cmd": "request.get",
+            "url": url,
+            "maxTimeout": 60000,
+            "proxy": {
+                "url": PROXY_IP,
+            },
+            "cookies": []
+        }
+        resp = requests.post(CF_RESOLVER_URL, headers=headers, json=data)
+        if not resp.ok:
+            return
+        data = json.loads(resp.content)
+        if data.get("status") != "ok":
+            return
+        return data.get("solution", {}).get("response", "")
+
+    def _get_profile_stats(self, nickname: str, platform: str) -> None | Stats:
         url = f'{TRACKER_GG_API_ENDPOINT}/{GAME}/standard/matches/{platform}/{nickname}'
-        response = requests.get(url, headers=HEADERS, proxies=PROXIES, timeout=10)
-        if not response.ok:
-            raise Exception(f'Error: {response.status_code}')
-        data = response.json()
-        if not data:
+        response = self._cf_resolve(url)
+        data = json.loads(response)
+        if data is None:
             return
         return Stats(**data)
 
-    @staticmethod
-    def _get_profile_site(nickname: str, platform: str) -> StatsORM | None:
+    def _get_profile_site(self, nickname: str, platform: str) -> StatsORM | None:
         url = f'https://tracker.gg/{GAME}/profile/{platform}/{nickname}/overview'
-        response = requests.get(url, headers=HEADERS, proxies=PROXIES, timeout=10)
-        if not response.ok:
+        response = self._cf_resolve(url)
+        if response is None:
             return
 
-        soup = BeautifulSoup(response.content, 'html.parser')
+        soup = BeautifulSoup(response, 'html.parser')
+        logger.debug(soup)
         dom = etree.HTML(str(soup))
         _level = next(iter(dom.xpath('//*[@id="app"]/div[2]/div[3]/div/main/div[3]/div[3]/div/div/div[1]/div[1]/div/div/div/div/div'))).text
         level = re.sub(r'\D', '', _level)

@@ -1,0 +1,8 @@
+services:
+  cf_resolver:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    environment:
+      LOG_LEVEL: info
+    restart: unless-stopped
+    ports:
+      - "8191:8191"
