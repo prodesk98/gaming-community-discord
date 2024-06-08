@@ -64,7 +64,6 @@ class TrackerGGService:
             return
 
         soup = BeautifulSoup(response, 'html.parser')
-        logger.debug(soup)
         dom = etree.HTML(str(soup))
         _level = next(iter(dom.xpath('//*[@id="app"]/div[2]/div[3]/div/main/div[3]/div[3]/div/div/div[1]/div[1]/div/div/div/div/div'))).text
         level = re.sub(r'\D', '', _level)
