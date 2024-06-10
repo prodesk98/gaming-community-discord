@@ -84,7 +84,7 @@ class TrackerGGService:
         self.set_cookie_cf_bm(cookies)
         return solution.get("response", "")
 
-    def request(self, url: str) -> bytes | str | None:
+    def request(self, url: str) -> bytes | None:
         verify_cookie_cf_bm = self.verify_cf_bm()
         logger.info(f"verify_cookie_cf_bm: {verify_cookie_cf_bm}")
         logger.info(f"CF_BM: {CF_BM}")
@@ -93,7 +93,7 @@ class TrackerGGService:
             response = self._cf_resolve(url)
             if response is None:
                 return
-            return response
+            return response.encode()
         response = requests.get(url, headers=HEADERS, cookies=self.get_cookie_cf_bm(),
                                 proxies={"http": PROXY_IP, "https": PROXY_IP} if PROXY_IP else {})
         if not response.ok:
