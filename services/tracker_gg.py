@@ -78,6 +78,7 @@ class TrackerGGService:
             return
         data = json.loads(resp.content)
         if data.get("status") != "ok":
+            CF_BM["timestamp"] = 0
             return
         solution = data.get("solution", {})
         cookies = solution.get("cookies", [])
